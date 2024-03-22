@@ -1,0 +1,27 @@
+#lang pie
+;(the (Pair Atom Atom) (cons 'rat 'bag))
+
+;'atom is the same Atom as 'atom
+
+#|
+(car
+  (cdr
+    (the
+      (Pair
+        Atom
+        (Pair
+          Atom
+          Atom)
+        )
+      (cons 'rat
+        (cons 'bag 'oo)
+        )
+      ))) 
+|#
+
+; Pair can only have types in them! 
+(Pair
+  (car
+    (the (Pair U Atom) (cons Atom 'oooo)))
+  (cdr
+    (the (Pair Atom U) (cons 'asdf Atom ))))
