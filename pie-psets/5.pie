@@ -1,0 +1,122 @@
+#lang pie
+
+(claim step-+ (-> Nat Nat))
+(define step-+ 
+  (λ (n)
+    (add1 n)))
+(claim + (-> Nat Nat Nat))
+(define +
+  (λ (m n)
+    (iter-Nat m
+      n
+      step-+)))
+(claim curry
+  (Pi
+    (
+     (A U)
+     (B U)
+     (C U)
+     )
+    (->
+     (-> (Pair A B) C)
+     (-> A B C))))
+(define curry
+  (λ (A B C)
+    (λ (pairfunction)
+      (λ (a b)
+        (pairfunction (cons a b))))))
+
+(claim pear+
+  (-> (Pair Nat Nat)
+      Nat))
+(define pear+
+  (λ (ab)
+    (+ (car ab) (cdr ab))))
+
+
+(claim decurry
+  (Pi
+    (
+     (A U)
+     (B U)
+     (C U)
+     )
+    (->
+     (-> A B C)
+     (-> (Pair A B) C))))
+(define decurry
+  (λ (A B C)
+    (λ (abc)
+      (λ (ab)
+        (abc (car ab) (cdr ab))))))
+
+
+; all below is testing code
+
+
+(claim twice (-> Nat Nat))
+(define twice
+  (λ (m)
+    (+ m m)))
+
+(claim thrice(-> Nat Nat))
+(define thrice
+  (λ (m)
+    (+ m (+ m m))))
+
+(claim compose
+  (Pi
+    ((A U)
+    (B U)
+    (C U))
+  (->
+   (-> B C)
+   (-> A B)
+   (-> A C)
+   )))
+(define compose
+  (λ (A B C)
+    (λ (BC AB)
+      (λ (arg)
+        (BC (AB arg))))))
+
+
+
+(claim tre
+  (-> Nat Atom U))
+(define tre
+  (λ (n a)
+    Atom))
+
+
+(claim ee Nat)
+(define ee (compose Nat Nat Nat twice twice 2))
+
+(claim pair+ (-> (Pair Nat Nat) Nat))
+(define pair+
+  (decurry Nat Nat Nat +))
+
+
+(claim c+ (-> (Pair Nat Nat) Nat))
+(define c+ (decurry Nat Nat Nat +))
+
+(claim six-the-hard-way Nat)
+(define six-the-hard-way (c+ (cons 3 3)))
+
+(claim flip
+  (Pi (
+       (A U)
+       (B U)
+       (C U)
+       )
+  (->
+   (-> A B C)
+   (-> B A C))))
+(define flip
+  (λ (A B C)
+    (λ (f)
+      (λ (b a)
+        (f a b)))))
+
+
+    

@@ -1,0 +1,157 @@
+#lang pie
+(claim step-+ (-> Nat Nat))
+(define step-+ 
+  (λ (n)
+    (add1 n)))
+(claim + (-> Nat Nat Nat))
+(define +
+  (λ (m n)
+    (iter-Nat m
+      n
+      step-+)))
+
+(claim exp
+  (List Atom))
+(define exp
+  (:: 'cooked
+    (:: 'eaten
+      (:: 'tried-cleaning
+        (:: 'understood
+          (:: 'slept nil))))))
+
+(claim ruboard (List Atom))
+(define ruboard
+  (:: 'whole-rye
+    (:: 'soaked-rye-kernels
+      (:: 'pure-water
+        (:: 'active-sourdough
+          (:: 'salt nil))))))
+
+#|
+rec-list
+target
+base
+step
+
+(List E)
+X
+(-> E(lement of list) (List E) X(accumulation)
+    X (output))
+
+(rec-list nil) is base
+
+easy to think of ths structure of step in rec-list
+as recursing down the head of a list
+and popping one element at a time
+
+so any given call to rec-List
+will call step over and over,
+popping the head each time
+
+then I get to decide whatever the final argument, the accumulation is.
+
+|#
+
+
+; general length!
+; called like: (length ElementType ActualList)
+(claim length
+  (Pi
+    (
+     (E U)
+     )
+    (-> (List E) Nat)))
+
+(claim step-length
+  (Pi ((E U))
+    (-> E (List E) Nat Nat)))
+(define step-length
+  (λ (E)
+    (λ (curr-head rest curr-length)
+      (add1 curr-length))))
+(define length
+  (λ (E)
+    (λ (list)
+      (rec-List list
+        0 ; replaces nil on final call of step-length
+        (step-length E)))))
+
+; Atom specific length
+(claim length-Atom
+  (-> (List Atom) Nat))
+(define length-Atom
+  (λ (atomlist)
+    (length Atom atomlist)))
+
+; append two lists
+; assuming same inner type for now
+; takes two lists, listA and listB
+; and produces listA + listB
+; replacing the nil in listA with listB
+(claim append
+  (Pi (
+       (E U)
+       )
+    (-> (List E) (List E)
+        (List E))))
+(claim step-append
+  (Pi ((E U))
+    (-> E (List E) (List E)
+        (List E))))
+(define step-append
+  (λ (E)
+    (λ (element restoflist currlist)
+      (:: element currlist))))
+    
+(define append
+  (λ (E)
+    (λ (listA listB)
+      (rec-List listA
+        listB
+        (step-append E)
+        ))))
+
+
+; snoc adds an element to the end of a list
+(claim snoc
+  (Pi ((E U))
+    (-> (List E) E
+        (List E))))
+#|
+heavy-handed, less recursion understanding snoc
+(define snoc
+  (λ (E)
+    (λ (element list)
+      (append E list (:: element nil)))))
+|#
+; cooler rec-List-ing snoc
+(define snoc
+  (λ (E)
+    (λ (list element)
+      (rec-List list
+        (:: element nil) ; rec-List will start actual evaluation on (step-append last-element-of-list base)
+        (step-append E)))))
+
+
+; concat
+(claim concat
+  (Pi ((E U))
+    (-> (List E) (List E)
+        (List E))))
+(claim step-concat
+  ; concatenation will be returning a (List E)
+  ; thus the X for accumulation and return
+  ; will be (List E)
+  (Pi ((E U))
+    (-> E (List E) (List E) (List E))))
+(define step-concat
+  (λ (E)
+    (λ (currelement rest currlist)
+      (snoc E currlist currelement))))
+(define concat
+  (λ (E)
+    (λ (lista listb)
+      (rec-List listb
+        lista
+        (step-concat E))
+        )))

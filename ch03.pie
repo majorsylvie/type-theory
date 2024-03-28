@@ -1,0 +1,73 @@
+#lang pie
+
+#|
+total function map all possible arguments to values
+
+; which-Nat (n, base, func) is either base for n=0
+; or (fun n-1)
+
+iter-Nat (n, base, func) is base for n=0
+or (func (iter-Nat n-1, base, func))
+
+applies step target times to base
+step is successor,
+
+
+(step n (rec-Nat n base step)).
+
+
+|#
+
+; give addition pls
+(claim step-+ (-> Nat Nat))
+(define step-+ 
+  (λ (n)
+    (add1 n)))
+(claim + (-> Nat Nat Nat))
+(define +
+  (λ (m n)
+    (iter-Nat m
+      n
+      step-+)))
+
+
+; bad def
+#|
+(claim gauss (-> Nat Nat))
+(define gauss
+  (λ (n)
+    (which-Nat n
+      0
+      (λ (n-1)
+        (+ (add1 n-1) (gauss n-1))))))
+|#
+
+; in class ben caldwell multiplication
+(claim *
+  (-> Nat Nat
+      Nat))
+(define *
+  (λ (x y)
+    (rec-Nat
+      x ; how many times I step, x*y = x times of adding y to itself
+      0
+      (λ (x z)
+        (+ x z)))))
+
+
+(claim zerop (-> Nat Atom))
+(define zerop
+  (λ (n)
+    (which-Nat n
+      'True
+      (λ (_)'False))))
+
+(claim *
+  (-> Nat Nat Nat))
+(define *
+  (λ (adder count)
+    (iter-Nat
+    count ; this many time
+    0 ; apply step to 0 count times
+    (λ (base-and-cumm)
+      (+ adder base-and-cumm)))))

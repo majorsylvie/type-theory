@@ -1,0 +1,134 @@
+#lang pie
+#|
+elimators (like cdr) take apart values built by constructors
+
+lambda is not a constructor
+lambda functions are values
+
+cons' are values
+
+same Nat if:
+both values are zero
+
+"neutral expressions"
+are things that cannot be evalulated yet
+like (car x) where x is (Pair Nat Nat)
+we cannot know what (car x) will be till provided an x
+
+but if I can simplify/rename variables for  different expression to also be (car x) then they are equivalent
+
+
+
+type constructors are things like
+Atom
+Nat
+Pair
+->
+and U(niverse)
+
+(car
+  (cons Atom 'r))
+is not a value,
+since car is an eliminator
+not a constructor
+   constructors construct values described by types
+nor a type constructor
+
+(cons Atom Atom)
+has type
+(Pair U U)
+
+if x is a U then x is a type
+
+
+
+|#
+(claim step-+ (-> Nat Nat))
+(define step-+ 
+  (λ (n)
+    (add1 n)))
+(claim + (-> Nat Nat Nat))
+(define +
+  (λ (m n)
+    (iter-Nat m
+      n
+      step-+)))
+
+;35
+(claim veg
+  (Pair Atom Atom))
+(define veg
+  (cons 'cel 'car))
+
+; veg
+
+(which-Nat 5
+  'nonono
+  (λ (unused)
+    'yesyesyes))
+
+
+(which-Nat 5
+  0
+  (λ (n)
+    (add1 n)))
+
+(claim gauss
+  (-> Nat Nat))
+
+(claim Pear U)
+(define Pear 
+  (Pair Nat Nat))
+
+
+;93
+(claim Pear-maker U)
+(define Pear-maker
+  (-> Nat Nat
+      Pear))
+
+; i think eliminate here is a misleading
+; it's more "apply a function taking two arguments on a pear"
+(claim elim-Pear
+  (-> Pear Pear-maker
+      Pear))
+(define elim-Pear
+  (λ (pear maker)
+    (maker (car pear) (cdr pear))))
+
+; my attempt
+(claim add-Pear
+  (-> Pear Pear
+      Pear))
+(define add-Pear
+  (λ (p1 p2)
+    (cons
+      (+ (car p1) (car p2))
+      (+ (cdr p1) (cdr p2)))))
+
+; frame 100
+(claim pearwise+
+  (-> Pear Pear
+      Pear))
+
+(define pearwise+
+  (λ (zefi anya)
+    (elim-Pear zefi
+      (λ (z1 z2)
+        (elim-Pear anya
+          (λ (a1 a2)
+            (cons
+              (+ z1 a1)
+              (+ z2 a2))))))))
+
+(add-Pear (cons 1 2) (cons 9 18))
+(pearwise+(cons 1 2) (cons 9 18))
+
+(claim silly (-> Nat Nat Nat))
+(define silly (λ (a a) a))
+(silly 1 2)
+
+#|
+silly 1 2 is 2
+because the overlapping names are 
+|#
