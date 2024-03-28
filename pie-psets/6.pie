@@ -1,0 +1,69 @@
+#lang pie
+(claim step-+ (-> Nat Nat))
+(define step-+ 
+  (λ (n)
+    (add1 n)))
+(claim + (-> Nat Nat Nat))
+(define +
+  (λ (m n)
+    (iter-Nat m
+      n
+      step-+)))
+
+(claim exp
+  (List Atom))
+(define exp
+  (:: 'cooked
+    (:: 'eaten
+      (:: 'tried-cleaning
+        (:: 'understood
+          (:: 'slept nil))))))
+
+(claim ruboard (List Atom))
+(define ruboard
+  (:: 'whole-rye
+    (:: 'soaked-rye-kernels
+      (:: 'pure-water
+        (:: 'active-sourdough
+          (:: 'salt nil))))))
+
+(claim append
+  (Pi (
+       (E U)
+       )
+    (-> (List E) (List E)
+        (List E))))
+(claim step-append
+  (Pi ((E U))
+    (-> E (List E) (List E)
+        (List E))))
+(define step-append
+  (λ (E)
+    (λ (element restoflist currlist)
+      (:: element currlist))))
+    
+(define append
+  (λ (E)
+    (λ (listA listB)
+      (rec-List listA
+        listB
+        (step-append E)
+        ))))
+
+
+; snoc adds an element to the end of a list
+(claim snoc
+  (Pi ((E U))
+    (-> (List E) E
+        (List E))))
+(define snoc
+  (λ (E)
+    (λ (element list)
+      (append E list (:: element nil)))))
+
+
+(claim concat
+  (Pi ((E U))
+    (-> (List (List E))
+        (List E))))
+(define 
